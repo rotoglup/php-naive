@@ -11,8 +11,9 @@ The provided </some/path> values are joined to 'ROOT_FOLDER' constant.
 
 Limitations:
 
-1. Can't create folders or download files.
+1. Causes security holes (can upload malicious files, PHP scripts, htaccess, ...)
 2. Does not support accents in paths on Windows (which does not handle utf-8 strings in paths)
+3. Does not provide folder creation or file download
 
 Example use is :
 <?php
