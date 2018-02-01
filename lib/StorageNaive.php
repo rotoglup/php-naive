@@ -21,7 +21,8 @@ require_once('./lib/StorageNaive.php');
 \StorageNaive\main('files/'); // IMPORTANT(nico) '/' at the end
 ?>
 
-Needs PHP 5.5+ for `finally` clauses.
+Sadly, I need this to be compatible with PHP 5.4, so no `finally` clauses.
+
 Licence : https://unlicense.org/UNLICENSE
 */
 
@@ -111,10 +112,14 @@ function _upload($abspath) {
       }
 
     }
-    finally {
+    catch (Exception $e) {
       fclose($src);
       fclose($dst);
+      throw $e;
     }
+
+    fclose($src);
+    fclose($dst);
 
     // finalize destination file
     if (!rename($temppath, $abspath)) {
@@ -122,11 +127,12 @@ function _upload($abspath) {
     }
 
   }
-  finally {
+  catch (Exception $e) {
 
     if (file_exists($temppath)) {
       unlink($temppath);
     }
+    throw $e;
   }
 
   $name = basename($abspath);
