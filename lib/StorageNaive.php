@@ -1,7 +1,7 @@
 <?php namespace StorageNaive;
 
 /*
-the 'API' provided is :
+The 'API' provided is :
 
 * ?action=list_folder&path=</some/path>
 * ?action=permanently_delete&path=</some/path>
@@ -24,6 +24,7 @@ require_once('./lib/StorageNaive.php');
 
 Sadly, I need this to be compatible with PHP 5.4, so no `finally` clauses.
 
+Version 0.0.0
 Licence : https://unlicense.org/UNLICENSE
 */
 
