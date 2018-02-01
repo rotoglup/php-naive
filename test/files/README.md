@@ -1,0 +1,1 @@
+This folder is the root storage for `filesystem.php`.
