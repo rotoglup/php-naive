@@ -26,7 +26,7 @@ Sadly, I need this to be compatible with PHP 5.4, so no `finally` clauses.
 
 Version 0.0.1
 
-* validate paths arguments, limit to ASCII characters
+* validate paths arguments, limit to ASCII characters, not empty, start with '/'
 
 Licence : https://unlicense.org/UNLICENSE
 */
@@ -47,19 +47,19 @@ function main($ROOT_FOLDER) {         // IMPORTANT(nico) $ROOT_FOLDER must end w
     switch ($action) {
 
     case 'list_folder':
-      $path = _checked_GET('path');
+      $path = _GET_valid_path('path');
       $abspath = _abspath($ROOT_FOLDER, $path);
       $result = _list_folder($abspath);
       break;
 
     case 'permanently_delete':
-      $path = _checked_GET('path');
+      $path = _GET_valid_path('path');
       $abspath = _abspath($ROOT_FOLDER, $path);
       $result = _permanently_delete($abspath);
       break;
 
     case 'upload':
-      $path = _checked_GET('path');
+      $path = _GET_valid_path('path');
       $abspath = _abspath($ROOT_FOLDER, $path);
       if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         throw new _HTTPException('Bad Request', 400, 'POST expected');
@@ -198,15 +198,27 @@ function _metadata($name, $path) {
 
 function _abspath($ROOT_FOLDER, $path) {
 
-  if (preg_match('/[^\x20-\x7e]/', $path)) {
-    throw new _HTTPException('Bad Request', 400, 'Invalid path `' . $path . '`, only ASCII characters are allowed'); 
-  }
   return $ROOT_FOLDER . $path;       // FIXME(nico) security check, path should be absolute starting with '/'
 }
 
 function _path_join($root, $path) {
 
   return $root . $path;            // FIXME(nico) check '/' & stuff
+}
+
+function _GET_valid_path($varname) {
+  $path = _checked_GET($varname);
+  $pathlen = strlen($path);
+  if ($pathlen == 0) {
+    throw new _HTTPException('Bad Request', 400, 'Invalid empty path'); 
+  }
+  if ($path[0] != '/') {
+    throw new _HTTPException('Bad Request', 400, 'Invalid path, must start with `/`'); 
+  }
+  if (preg_match('/[^\x20-\x7e]/', $path)) {
+    throw new _HTTPException('Bad Request', 400, 'Invalid path `' . $path . '`, only ASCII characters are allowed'); 
+  }
+  return $path;
 }
 
 function _checked_GET($varname) {
