@@ -12,7 +12,7 @@ The provided </some/path> values are joined to 'ROOT_FOLDER' constant.
 Limitations:
 
 1. Causes security holes (can upload malicious files, PHP scripts, htaccess, ...)
-2. Does not support accents in paths on Windows (which does not handle utf-8 strings in paths)
+2. Paths are limited to ASCII characters (Windows does not handle utf-8 strings in paths, so I took a shortcut)
 3. Does not provide folder creation or file download
 
 Example use is :
@@ -24,7 +24,10 @@ require_once('./lib/StorageNaive.php');
 
 Sadly, I need this to be compatible with PHP 5.4, so no `finally` clauses.
 
-Version 0.0.0
+Version 0.0.1
+
+* validate paths arguments, limit to ASCII characters
+
 Licence : https://unlicense.org/UNLICENSE
 */
 
@@ -195,6 +198,9 @@ function _metadata($name, $path) {
 
 function _abspath($ROOT_FOLDER, $path) {
 
+  if (preg_match('/[^\x20-\x7e]/', $path)) {
+    throw new _HTTPException('Bad Request', 400, 'Invalid path `' . $path . '`, only ASCII characters are allowed'); 
+  }
   return $ROOT_FOLDER . $path;       // FIXME(nico) security check, path should be absolute starting with '/'
 }
 
