@@ -24,6 +24,10 @@ require_once('./lib/StorageNaive.php');
 
 Sadly, I need this to be compatible with PHP 5.4, so no `finally` clauses.
 
+Version 0.0.2
+
+* set proper rights on files to allow reading them as static files
+
 Version 0.0.1
 
 * validate paths arguments, limit to ASCII characters, not empty, start with '/'
@@ -115,6 +119,7 @@ function _upload($abspath) {
           throw new _HTTPException("Could not write to file", 500);
         }
       }
+      chmod($temppath, 0644);
 
     }
     catch (Exception $e) {
